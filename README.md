@@ -1,6 +1,7 @@
 # CRAB Data Pipeline
 
-The crab_cronjob is material for excuting schedule datapipeline. The goal is to update the data on dashboards(Opensearch and Grafana) daily. \ 
+The crab_cronjob is material for excuting schedule datapipeline. The goal is to update the data on dashboards(Opensearch and Grafana) daily.
+
 The folder contains \
 **crab_tape_recall_daily.py** - Code for pulling rucio history data from HDFS and upload to dashboards daily \
 **crab_data_daily.py** - Code for pulling crab data from HDFS and upload to dashboards daily \
