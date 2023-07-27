@@ -46,7 +46,7 @@ HDFS_CRAB_part = f'/project/awg/cms/crab/tasks/{wa_date}/'
 print("===============================================", "File Directory:", HDFS_CRAB_part, "Work Directory:", os.getcwd(), "===============================================", sep='\n')
 
 crab_part = spark.read.format('avro').load(HDFS_CRAB_part)
-df = crab_part.select("TM_TASKNAME","TM_START_TIME","TM_TASK_STATUS","TM_END_INJECTION","TM_SPLIT_ALGO","TM_USERNAME","TM_USER_ROLE","TM_JOB_TYPE","TM_IGNORE_LOCALITY","TM_SCRIPTEXE","TM_USER_CONFIG")
+df = crab_part.select("TM_TASKNAME","TM_START_TIME","TM_TASK_STATUS","TM_SPLIT_ALGO","TM_USERNAME","TM_USER_ROLE","TM_JOB_TYPE","TM_IGNORE_LOCALITY","TM_SCRIPTEXE","TM_USER_CONFIG")
 df.createOrReplaceTempView("crab_algo")
 
 # Query daily data
@@ -87,7 +87,6 @@ def get_index_schema():
                 "TM_TASKNAME": {"ignore_above": 2048, "type": "keyword"},
                 "TM_START_TIME": {"format": "epoch_millis", "type": "date"},
                 'TM_TASK_STATUS': {"ignore_above": 2048, "type": "keyword"},
-                "TM_END_INJECTION": {"format": "epoch_millis", "type": "date"},
                 "TM_SPLIT_ALGO": {"ignore_above": 2048, "type": "keyword"},
                 "TM_USERNAME": {"ignore_above": 2048, "type": "keyword"},
                 "TM_USER_ROLE": {"ignore_above": 2048, "type": "keyword"},
@@ -104,6 +103,6 @@ def get_index_schema():
 _index_template = 'crab-data-ekong1'
 client = osearch.get_es_client("es-cms1.cern.ch/es", 'secret_opensearch.txt', get_index_schema())
 idx = client.get_or_create_index(timestamp=time.time(), index_template=_index_template, index_mod="M")
-client.send(idx, docs, metadata=None, batch_size=10000, drop_nulls=False)
+no_of_fail_saved = client.send(idx, docs, metadata=None, batch_size=10000, drop_nulls=False)
 
-print("========================================================================", "FINISHED : ", len(docs), "ROWS ARE SENT", "========================================================================", sep='\n')
+print("========================================================================", "FINISHED : ", len(docs), "ROWS ARE SENT", no_of_fail_saved, "ROWS ARE FAILED", "========================================================================", sep='\n')

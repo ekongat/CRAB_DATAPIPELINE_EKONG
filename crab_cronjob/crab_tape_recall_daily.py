@@ -40,12 +40,16 @@ TOYEAR = TODAY[:4]
 YESTERDAY = str(datetime.now()-timedelta(days=1))[:10]
 # YESTERDAY = '2023-07-10'
 
+# Import data into database form
+
 wa_date = TODAY
 HDFS_RUCIO_RULES_HISTORY = f'/project/awg/cms/rucio/{wa_date}/rules_history/'
 print("===============================================", "File Directory:", HDFS_RUCIO_RULES_HISTORY, "Work Directory:", os.getcwd(), "===============================================", sep='\n')
 
 rucio_rules_history = spark.read.format('avro').load(HDFS_RUCIO_RULES_HISTORY).withColumn('ID', lower(_hex(col('ID'))))
 rucio_rules_history.createOrReplaceTempView("rules_history")
+
+# Query data in daily
 
 query = query = f"""\
 WITH filter_t AS (
@@ -80,7 +84,11 @@ AND EXPIRES_AT < unix_timestamp("{TODAY} 00:00:00", "yyyy-MM-dd HH:mm:ss")*1000
 tmpdf = spark.sql(query)
 tmpdf.show()
 
+# Convert database to dictionary
+
 docs = tmpdf.toPandas().to_dict('records')
+
+# Define type of each schema
 
 def get_index_schema():
     return {
@@ -98,11 +106,12 @@ def get_index_schema():
             }
         }
     }
-    
-_index_template = 'test-crab-tape-recall-daily'
-client = osearch.get_es_client("es-cms1.cern.ch/es", 'secret_opensearch.txt', get_index_schema())
-# index_mod="": 'test-foo', index_mod="Y": 'test-foo-YYYY', index_mod="M": 'test-foo-YYYY-MM', index_mod="D": 'test-foo-YYYY-MM-DD',
-idx = client.get_or_create_index(timestamp=time.time(), index_template=_index_template, index_mod="M")
-client.send(idx, docs, metadata=None, batch_size=10000, drop_nulls=False)
 
-print("========================================================================", "FINISHED", "========================================================================", sep='\n')
+# Send data to Opensearch
+
+_index_template = 'crab-tape-recall-daily-ekong'
+client = osearch.get_es_client("es-cms1.cern.ch/es", 'secret_opensearch.txt', get_index_schema())
+idx = client.get_or_create_index(timestamp=time.time(), index_template=_index_template, index_mod="M")
+no_of_fail_saved = client.send(idx, docs, metadata=None, batch_size=10000, drop_nulls=False)
+
+print("========================================================================", "FINISHED : ", len(docs), "ROWS ARE SENT", no_of_fail_saved, "ROWS ARE FAILED", "========================================================================", sep='\n')
