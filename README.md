@@ -10,7 +10,7 @@ The folder contains \
 **osearch.py** and **secret_opensearch.txt** - Tools for send data to Opensearch Dashboards, they are imported in crab_tape_recall_daily.py
 
 The Opensearch Dashboards index: **crab-tape-recall-daily*** and **crab-tape-recall-daily-ekong*** \
-Grafana: https://monit-grafana.cern.ch/goto/9Mf6lXjVz?orgId=11
+Grafana: https://monit-grafana.cern.ch/goto/STBZ3uCVz?orgId=11
 
 Where srcipt for **acrontab** is \
 55 05 * * * lxplus.cern.ch /afs/cern.ch/user/e/eatthaph/crab_cronjob/cron_script.sh /afs/cern.ch/user/e/eatthaph/crab_cronjob/crab_tape_recall_daily.py &> /afs/cern.ch/user/e/eatthaph/crab_cronjob/crab_tape_recall_daily.log \
