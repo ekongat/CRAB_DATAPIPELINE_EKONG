@@ -26,7 +26,6 @@ from pyspark.sql.types import (
 
 import numpy as np
 import json
-# import math
 import osearch
 from pyspark.sql import SparkSession
 
@@ -35,13 +34,17 @@ spark = SparkSession\
         .appName("crab_tape_recall")\
         .getOrCreate()
 
+# Query date
+
 TODAY = str(datetime.now())[:10]
-TOYEAR = TODAY[:4]
 YESTERDAY = str(datetime.now()-timedelta(days=1))[:10]
+
+# Data date
+
+wa_date = TODAY
 
 # Import data into database form
 
-wa_date = TODAY
 HDFS_CRAB_part = f'/project/awg/cms/crab/tasks/{wa_date}/'
 print("===============================================", "File Directory:", HDFS_CRAB_part, "Work Directory:", os.getcwd(), "===============================================", sep='\n')
 

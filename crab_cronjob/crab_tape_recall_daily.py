@@ -34,29 +34,33 @@ spark = SparkSession\
         .appName("crab_tape_recall")\
         .getOrCreate()
 
+# Query date
+
 TODAY = str(datetime.now())[:10]
-# TODAY = '2023-07-11'
 TOYEAR = TODAY[:4]
 YESTERDAY = str(datetime.now()-timedelta(days=1))[:10]
-# YESTERDAY = '2023-07-10'
+
+# Data date
+
+wa_date = TODAY
 
 # Import data into database form
 
-wa_date = TODAY
 HDFS_RUCIO_RULES_HISTORY = f'/project/awg/cms/rucio/{wa_date}/rules_history/'
 print("===============================================", "File Directory:", HDFS_RUCIO_RULES_HISTORY, "Work Directory:", os.getcwd(), "===============================================", sep='\n')
 
 rucio_rules_history = spark.read.format('avro').load(HDFS_RUCIO_RULES_HISTORY).withColumn('ID', lower(_hex(col('ID'))))
-rucio_rules_history.createOrReplaceTempView("rules_history")
 
 # Query data in daily
+
+rucio_rules_history = rucio_rules_history.select("ID", "NAME", "STATE", "EXPIRES_AT", "UPDATED_AT", "CREATED_AT", "ACCOUNT").filter(f"""ACCOUNT IN ('crab_tape_recall')""").cache()
+rucio_rules_history.createOrReplaceTempView("rules_history")
 
 query = query = f"""\
 WITH filter_t AS (
 SELECT ID, NAME, STATE, EXPIRES_AT, UPDATED_AT, CREATED_AT
 FROM rules_history 
 WHERE 1=1
-AND ACCOUNT = "crab_tape_recall"
 AND CREATED_AT >= unix_timestamp("{TOYEAR}-01-01 00:00:00", "yyyy-MM-dd HH:mm:ss")*1000
 ),
 rn_t AS (

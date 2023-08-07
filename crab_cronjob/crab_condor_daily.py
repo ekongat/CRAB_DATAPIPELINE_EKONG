@@ -36,9 +36,16 @@ spark = SparkSession\
         .appName("crab_tape_recall")\
         .getOrCreate()
 
+# CRAB table date
+
 TODAY = str(datetime.now())[:10]
-TOYEAR = TODAY[:4]
-YESTERDAY = str(datetime.now()-timedelta(days=1))[:10]
+wa_date = TODAY
+
+# condor data and query date
+
+end_date = datetime.now()
+end_date = end_date.replace(minute=0, hour=0, second=0, microsecond=0)
+start_date = end_date-timedelta(days=1)
 
 # Import condor data
 
@@ -92,9 +99,6 @@ def get_candidate_files(start_date, end_date, spark, base=_DEFAULT_HDFS_FOLDER):
     return candidate_files
     
 schema = _get_schema()
-end_date = datetime.now()
-end_date = end_date.replace(minute=0, hour=0, second=0, microsecond=0)
-start_date = end_date-timedelta(days=1)
 
 condor_df = (
         spark.read.option("basePath", _DEFAULT_HDFS_FOLDER)
@@ -105,24 +109,30 @@ condor_df = (
         .filter(
             f"""Status IN ('Completed')
             AND Type IN ('analysis')
+            AND RecordTime >= {start_date.timestamp() * 1000}
+            AND RecordTime < {end_date.timestamp() * 1000}
             """
         )
-        .drop_duplicates(["GlobalJobId"])
+        .drop_duplicates(["GlobalJobId"]).cache()
     )
+
+# Convert file type by saving and recall it again (.json too complex for spark)
+
+condor_df.write.mode('overwrite').parquet("/cms/users/eatthaph/condor_vir_data" ,compression='zstd')
+condor_df = spark.read.format('parquet').load('/cms/users/eatthaph/condor_vir_data')
 
 # Import CRAB data
 
-wa_date = TODAY
 HDFS_CRAB_part = f'/project/awg/cms/crab/tasks/{wa_date}/'
 crab_df = spark.read.format('avro').load(HDFS_CRAB_part)
-crab_df = crab_df.select('TM_TASKNAME', 'TM_IGNORE_LOCALITY')
+crab_df = crab_df.select('TM_TASKNAME', 'TM_IGNORE_LOCALITY').cache()
 
 print("===============================================", "File Directory:", HDFS_CRAB_part, get_candidate_files(start_date, end_date, spark, base=_DEFAULT_HDFS_FOLDER), "Work Directory:", os.getcwd(), "===============================================", sep='\n')
 
 # Join condor job with CRAB data
 
 result_df = condor_df.join(crab_df, crab_df["TM_TASKNAME"] == condor_df["CRAB_Workflow"])\
-    .select('RecordTime', 'CMSPrimaryDataTier', 'WallClockHr', 'CoreHr', 'ExitCode', "CRAB_DataBlock", "TM_IGNORE_LOCALITY")
+    .select('RecordTime', 'CMSPrimaryDataTier', 'WallClockHr', 'CoreHr', 'ExitCode', "CRAB_DataBlock", "TM_IGNORE_LOCALITY", "GlobalJobId")
     
 # Convert database to dictionary
 
@@ -145,6 +155,7 @@ def get_index_schema():
             "properties": {
                 "RecordTime": {"format": "epoch_millis", "type": "date"},
                 "CMSPrimaryDataTier": {"ignore_above": 2048, "type": "keyword"},
+                "GlobalJobId": {"ignore_above": 2048, "type": "keyword"},
                 "WallClockHr": {"type": "long"},
                 "CoreHr": {"type": "long"},
                 "ExitCode": {"ignore_above": 2048, "type": "keyword"},
