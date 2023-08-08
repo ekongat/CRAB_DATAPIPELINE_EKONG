@@ -32,8 +32,8 @@ This dashboard is created to answer the following question: \
 
 ## acrontab script
 ```
-55 05 * * * lxplus.cern.ch /afs/cern.ch/user/e/eatthaph/crab_cronjob/cron_script.sh /afs/cern.ch/user/e/eatthaph/crab_cronjob/crab_tape_recall_daily.py &> /afs/cern.ch/user/e/eatthaph/crab_cronjob/crab_tape_recall_daily.log \
+55 05 * * * lxplus.cern.ch /afs/cern.ch/user/e/eatthaph/crab_cronjob/cron_script.sh /afs/cern.ch/user/e/eatthaph/crab_cronjob/crab_tape_recall_rules_history_daily.py &> /afs/cern.ch/user/e/eatthaph/crab_cronjob/crab_tape_recall_rules_history_daily.log \
 55 05 * * * lxplus.cern.ch /afs/cern.ch/user/e/eatthaph/crab_cronjob/cron_script.sh /afs/cern.ch/user/e/eatthaph/crab_cronjob/crab_data_daily.py &> /afs/cern.ch/user/e/eatthaph/crab_cronjob/crab_data_daily.log \
 55 05 * * * lxplus.cern.ch /afs/cern.ch/user/e/eatthaph/crab_cronjob/cron_script.sh /afs/cern.ch/user/e/eatthaph/crab_cronjob/crab_condor_daily.py &> /afs/cern.ch/user/e/eatthaph/crab_cronjob/crab_condor_daily.log
-55 05 * * * lxplus.cern.ch /afs/cern.ch/user/e/eatthaph/crab_cronjob/cron_script.sh /afs/cern.ch/user/e/eatthaph/crab_cronjob/crab_rules_tape_recall_daily.py &> /afs/cern.ch/user/e/eatthaph/crab_cronjob/crab_rules_tape_recall_daily.log
+55 05 * * * lxplus.cern.ch /afs/cern.ch/user/e/eatthaph/crab_cronjob/cron_script.sh /afs/cern.ch/user/e/eatthaph/crab_cronjob/crab_tape_recall_updated_rules_daily.py &> /afs/cern.ch/user/e/eatthaph/crab_cronjob/crab_tape_recall_updated_rules_daily.log
 ```
