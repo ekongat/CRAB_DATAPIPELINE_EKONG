@@ -116,5 +116,5 @@ idx = client.get_or_create_index(timestamp=time.time(), index_template=_index_te
 no_of_fail_saved = client.send(idx, docs, metadata=None, batch_size=10000, drop_nulls=False)
 
 print("================================= CRAB Table ======================================="
-, "FINISHED : ", len(docs), "ROWS ARE SENT", no_of_fail_saved, "ROWS ARE FAILED"
-, "=================================  CRAB Table =======================================", sep='\n')
+      , "FINISHED : ", len(docs), "ROWS ARE SENT", no_of_fail_saved, "ROWS ARE FAILED"
+      , "=================================  CRAB Table =======================================", sep='\n')
