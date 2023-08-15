@@ -68,8 +68,9 @@ def _get_schema():
                         StructField("CRAB_DataBlock", StringType(), nullable=True),
                         StructField("GlobalJobId", StringType(), nullable=False),
                         StructField("ExitCode", LongType(), nullable=True),
-                        StructField("CMS_SubmissionTool", StringType(), nullable=True),
-                        StructField("CRAB_Workflow", StringType(), nullable=True)
+                        StructField("CRAB_Workflow", StringType(), nullable=True),
+                        StructField("CommittedCoreHr", LongType(), nullable=True),
+                        StructField("CommittedWallClockHr", LongType(), nullable=True),
                     ]
                 ),
             ),
@@ -125,14 +126,15 @@ condor_df = spark.read.format('parquet').load('/cms/users/eatthaph/condor_vir_da
 
 HDFS_CRAB_part = f'/project/awg/cms/crab/tasks/{wa_date}/'
 crab_df = spark.read.format('avro').load(HDFS_CRAB_part)
-crab_df = crab_df.select('TM_TASKNAME', 'TM_IGNORE_LOCALITY').cache()
+crab_df = crab_df.select('TM_TASKNAME', 'TM_IGNORE_LOCALITY')
 
 print("===============================================", "File Directory:", HDFS_CRAB_part, get_candidate_files(start_date, end_date, spark, base=_DEFAULT_HDFS_FOLDER), "Work Directory:", os.getcwd(), "===============================================", sep='\n')
 
 # Join condor job with CRAB data
 
 result_df = condor_df.join(crab_df, crab_df["TM_TASKNAME"] == condor_df["CRAB_Workflow"])\
-    .select('RecordTime', 'CMSPrimaryDataTier', 'WallClockHr', 'CoreHr', 'ExitCode', "CRAB_DataBlock", "TM_IGNORE_LOCALITY", "GlobalJobId")
+    .select('RecordTime', 'CMSPrimaryDataTier', 'WallClockHr', 'CoreHr', 'CpuTimeHr', 'ExitCode'
+            , "CRAB_DataBlock", "TM_IGNORE_LOCALITY", "GlobalJobId", "CommittedCoreHr", "CommittedWallClockHr")
     
 # Convert database to dictionary
 
@@ -158,9 +160,13 @@ def get_index_schema():
                 "GlobalJobId": {"ignore_above": 2048, "type": "keyword"},
                 "WallClockHr": {"type": "long"},
                 "CoreHr": {"type": "long"},
+                "CpuTimeHr": {"type": "long"},
                 "ExitCode": {"ignore_above": 2048, "type": "keyword"},
                 "TM_IGNORE_LOCALITY": {"ignore_above": 2048, "type": "keyword"},
                 "CRAB_Type": {"ignore_above": 2048, "type": "keyword"},
+                "CRAB_DataBlock": {"ignore_above": 2048, "type": "keyword"},
+                "CommittedCoreHr": {"type": "long"}, 
+                "CommittedWallClockHr": {"type": "long"},
             }
         }
     }
@@ -170,7 +176,7 @@ def get_index_schema():
 _index_template = 'crab-condor-ekong'
 client = osearch.get_es_client("es-cms1.cern.ch/es", 'secret_opensearch.txt', get_index_schema())
 idx = client.get_or_create_index(timestamp=time.time(), index_template=_index_template, index_mod="M")
-no_of_fail_saved = client.send(idx, docs, metadata=None, batch_size=10000, drop_nulls=False)
+# no_of_fail_saved = client.send(idx, docs, metadata=None, batch_size=10000, drop_nulls=False)
 
-print("========================================================================", "FINISHED : ", len(docs), "ROWS ARE SENT", no_of_fail_saved, "ROWS ARE FAILED", "========================================================================", sep='\n')
+print("========================================================================", "FINISHED : ", len(docs), "ROWS ARE SENT", "ROWS ARE FAILED", "========================================================================", sep='\n')
 
