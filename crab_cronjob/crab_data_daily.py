@@ -46,7 +46,13 @@ wa_date = TODAY
 # Import data into database form
 
 HDFS_CRAB_part = f'/project/awg/cms/crab/tasks/{wa_date}/'
-print("===============================================", "File Directory:", HDFS_CRAB_part, "Work Directory:", os.getcwd(), "===============================================", sep='\n')
+print("==============================================="
+      , "CRAB Table"
+      , "==============================================="
+      , "File Directory:", HDFS_CRAB_part
+      , "Work Directory:", os.getcwd()
+      , "==============================================="
+      , "===============================================", sep='\n')
 
 crab_part = spark.read.format('avro').load(HDFS_CRAB_part)
 df = crab_part.select("TM_TASKNAME","TM_START_TIME","TM_TASK_STATUS","TM_SPLIT_ALGO","TM_USERNAME","TM_USER_ROLE","TM_JOB_TYPE","TM_IGNORE_LOCALITY","TM_SCRIPTEXE","TM_USER_CONFIG")
@@ -61,6 +67,7 @@ WHERE 1=1
 AND TM_START_TIME >= unix_timestamp("{YESTERDAY} 00:00:00", "yyyy-MM-dd HH:mm:ss")*1000 
 AND TM_START_TIME < unix_timestamp("{TODAY} 00:00:00", "yyyy-MM-dd HH:mm:ss")*1000 
 """
+
 tmpdf = spark.sql(query)
 tmpdf.show(10)
 
@@ -108,4 +115,6 @@ client = osearch.get_es_client("es-cms1.cern.ch/es", 'secret_opensearch.txt', ge
 idx = client.get_or_create_index(timestamp=time.time(), index_template=_index_template, index_mod="M")
 no_of_fail_saved = client.send(idx, docs, metadata=None, batch_size=10000, drop_nulls=False)
 
-print("========================================================================", "FINISHED : ", len(docs), "ROWS ARE SENT", no_of_fail_saved, "ROWS ARE FAILED", "========================================================================", sep='\n')
+print("================================= CRAB Table ======================================="
+, "FINISHED : ", len(docs), "ROWS ARE SENT", no_of_fail_saved, "ROWS ARE FAILED"
+, "=================================  CRAB Table =======================================", sep='\n')
