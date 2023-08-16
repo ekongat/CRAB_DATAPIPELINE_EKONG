@@ -82,6 +82,16 @@ for i in range(len(docs)):
     docs[i]['SIZE_TiB'] = docs[i]["BYTES"]/1099511627776
     del docs[i]["BYTES"]
 
+    # break down the name
+    NAME_i = docs[i]['NAME']
+    split_NAME = NAME_i.split('#')[0]
+    docs[i]['NAME_'] = NAME_i.split('#')[0]
+    split_NAME = docs[i]['NAME_'].split('/')
+    if len(split_NAME) != 4:
+        print("YO HOO !!, something wrong.", NAME_i)
+    docs[i]['PriDataset'] = split_NAME[1]
+    docs[i]['DataTier'] = split_NAME[-1]
+
 # Define type of each schema
 
 def get_index_schema():
@@ -101,6 +111,9 @@ def get_index_schema():
                 'DID_TYPE': {"ignore_above": 1024, "type": "keyword"},
                 'EXPIRES_AT': {"format": "epoch_millis", "type": "date"},
                 'TIMESTAMP': {"format": "epoch_millis", "type": "date"},
+                'NAME_': {"ignore_above": 2048, "type": "keyword"},
+                'PriDataset': {"ignore_above": 2048, "type": "keyword"},
+                'DataTier': {"ignore_above": 2048, "type": "keyword"},
             }
         }
     }
