@@ -128,7 +128,13 @@ HDFS_CRAB_part = f'/project/awg/cms/crab/tasks/{wa_date}/'
 crab_df = spark.read.format('avro').load(HDFS_CRAB_part)
 crab_df = crab_df.select('TM_TASKNAME', 'TM_IGNORE_LOCALITY')
 
-print("===============================================", "File Directory:", HDFS_CRAB_part, get_candidate_files(start_date, end_date, spark, base=_DEFAULT_HDFS_FOLDER), "Work Directory:", os.getcwd(), "===============================================", sep='\n')
+print("==============================================="
+      , "Condor Matrix and CRAB Table"
+      , "==============================================="
+      , "File Directory:", HDFS_CRAB_part, get_candidate_files(start_date, end_date, spark, base=_DEFAULT_HDFS_FOLDER)
+      , "Work Directory:", os.getcwd()
+      , "==============================================="
+      , "===============================================", sep='\n')
 
 # Join condor job with CRAB data
 
@@ -176,7 +182,11 @@ def get_index_schema():
 _index_template = 'crab-condor-ekong'
 client = osearch.get_es_client("es-cms1.cern.ch/es", 'secret_opensearch.txt', get_index_schema())
 idx = client.get_or_create_index(timestamp=time.time(), index_template=_index_template, index_mod="M")
-# no_of_fail_saved = client.send(idx, docs, metadata=None, batch_size=10000, drop_nulls=False)
+no_of_fail_saved = client.send(idx, docs, metadata=None, batch_size=10000, drop_nulls=False)
 
-print("========================================================================", "FINISHED : ", len(docs), "ROWS ARE SENT", "ROWS ARE FAILED", "========================================================================", sep='\n')
+print("=================================== Condor Matrix and CRAB Table ====================================="
+      , "FINISHED : "
+      , len(docs), "ROWS ARE SENT"
+      , no_of_fail_saved, "ROWS ARE FAILED"
+      , "=================================== Condor Matrix and CRAB Table =====================================", sep='\n')
 
