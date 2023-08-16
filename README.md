@@ -30,10 +30,7 @@ This dashboard is created to answer the following question: \
 1. What is wall clock time spent by each CMS data tier and each job type?
 2. What is the success rate of the Analysis job type?
 
-## acrontab script
+## crontab script
 ```
-55 05 * * * lxplus.cern.ch /afs/cern.ch/user/e/eatthaph/crab_cronjob/cron_script.sh /afs/cern.ch/user/e/eatthaph/crab_cronjob/crab_tape_recall_rules_history_daily.py &> /afs/cern.ch/user/e/eatthaph/crab_cronjob/crab_tape_recall_rules_history_daily.log \
-55 05 * * * lxplus.cern.ch /afs/cern.ch/user/e/eatthaph/crab_cronjob/cron_script.sh /afs/cern.ch/user/e/eatthaph/crab_cronjob/crab_data_daily.py &> /afs/cern.ch/user/e/eatthaph/crab_cronjob/crab_data_daily.log \
-55 05 * * * lxplus.cern.ch /afs/cern.ch/user/e/eatthaph/crab_cronjob/cron_script.sh /afs/cern.ch/user/e/eatthaph/crab_cronjob/crab_condor_daily.py &> /afs/cern.ch/user/e/eatthaph/crab_cronjob/crab_condor_daily.log
-55 05 * * * lxplus.cern.ch /afs/cern.ch/user/e/eatthaph/crab_cronjob/cron_script.sh /afs/cern.ch/user/e/eatthaph/crab_cronjob/crab_tape_recall_updated_rules_daily.py &> /afs/cern.ch/user/e/eatthaph/crab_cronjob/crab_tape_recall_updated_rules_daily.log
+34 05 * * * /home/crab3/workdir/crab-dp3/crab_cronjob/cron_daily.sh &> /home/crab3/workdir/crab-dp3/crab_cronjob/cron_daily.log
 ```
