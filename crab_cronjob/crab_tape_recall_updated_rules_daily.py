@@ -41,6 +41,13 @@ HDFS_RUCIO_RSES =          f'/project/awg/cms/rucio/{wa_date}/rses/part*.avro'
 HDFS_RUCIO_RULES =         f'/project/awg/cms/rucio/{wa_date}/rules'
 print("===============================================", "File Directory:", HDFS_RUCIO_DATASET_LOCKS, "Work Directory:", os.getcwd(), "===============================================", sep='\n')
 
+print("==============================================="
+      , "RUCIO : Rules, RSEs, Dataset"
+      , "==============================================="
+      , "File Directory:", HDFS_RUCIO_DATASET_LOCKS
+      , "Work Directory:", os.getcwd()
+      , "==============================================="
+      , "===============================================", sep='\n')
 rucio_dataset_locks = spark.read.format('avro').load(HDFS_RUCIO_DATASET_LOCKS)\
     .withColumn('BYTES', col('BYTES').cast(LongType()))\
     .withColumn('RULE_ID', lower(_hex(col('RULE_ID'))))\
@@ -105,4 +112,8 @@ client = osearch.get_es_client("es-cms1.cern.ch/es", 'secret_opensearch.txt', ge
 idx = client.get_or_create_index(timestamp=time.time(), index_template=_index_template, index_mod="M")
 no_of_fail_saved = client.send(idx, docs, metadata=None, batch_size=10000, drop_nulls=False)
 
-print("========================================================================", "FINISHED : ", len(docs), "ROWS ARE SENT", no_of_fail_saved, "ROWS ARE FAILED", "========================================================================", sep='\n')
+print("==================================== RUCIO : Rules, RSEs, Dataset ===================================="
+      , "FINISHED : "
+      , len(docs), "ROWS ARE SENT"
+      , no_of_fail_saved, "ROWS ARE FAILED"
+      , "==================================== RUCIO : Rules, RSEs, Dataset ====================================", sep='\n')
