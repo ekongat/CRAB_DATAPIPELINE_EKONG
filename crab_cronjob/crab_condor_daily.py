@@ -69,8 +69,8 @@ def _get_schema():
                         StructField("GlobalJobId", StringType(), nullable=False),
                         StructField("ExitCode", LongType(), nullable=True),
                         StructField("CRAB_Workflow", StringType(), nullable=True),
-                        StructField("CommittedCoreHr", LongType(), nullable=True),
-                        StructField("CommittedWallClockHr", LongType(), nullable=True),
+                        StructField("CommittedCoreHr", StringType(), nullable=True),
+                        StructField("CommittedWallClockHr", StringType(), nullable=True),
                     ]
                 ),
             ),
