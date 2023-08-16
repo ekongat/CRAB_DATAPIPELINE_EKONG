@@ -5,10 +5,10 @@ The **crab_cronjob** is material for excuting schedule datapipeline. The goal is
 ## Material
 The folder contains code for pulling the data today from HDFS and upload to dashboards, where \
 ### Data pulling
-**crab_tape_recall_daily.py** - Pulls wanted data from `rucio rules history` \
+**crab_tape_recall_daily.py** - Pulls wanted data from `rucio rules_history` \
 **crab_data_daily.py** - Pulls wanted data from `crab tasks` \
-**crab_rules_tape_recall_daily.py** - Pulls wanted data from rucio `dataset locks`, `rses`, and `rules` \
-**crab_condor_daily.py** - Pulls wanted data from `condor metric` and `crab tasks` \
+**crab_rules_tape_recall_daily.py** - Pulls wanted data from rucio `dataset_locks`, `rses`, and `rules` \
+**crab_condor_daily.py** - Pulls wanted data from `condor raw metric` and `crab tasks` \
 ### tool
 **run_spark.sh** - Shell script for `source` environment and run spark-submit for `$1` file, where `$1` in the script supposes to be a data pulling file (.py) \
 **cron_daily.sh** - Shell script for running **run_spark.sh** in the docker container, for all four data pulling files. Note that the file directory here must be directory in the container, not the host. \
