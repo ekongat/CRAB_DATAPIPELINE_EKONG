@@ -47,7 +47,14 @@ wa_date = TODAY
 # Import data into database form
 
 HDFS_RUCIO_RULES_HISTORY = f'/project/awg/cms/rucio/{wa_date}/rules_history/'
-print("===============================================", "File Directory:", HDFS_RUCIO_RULES_HISTORY, "Work Directory:", os.getcwd(), "===============================================", sep='\n')
+
+print("==============================================="
+      , "RUCIO : Rules History"
+      , "==============================================="
+      , "File Directory:", HDFS_RUCIO_RULES_HISTORY
+      , "Work Directory:", os.getcwd()
+      , "==============================================="
+      , "===============================================", sep='\n')
 
 rucio_rules_history = spark.read.format('avro').load(HDFS_RUCIO_RULES_HISTORY).withColumn('ID', lower(_hex(col('ID'))))
 
@@ -118,4 +125,8 @@ client = osearch.get_es_client("es-cms1.cern.ch/es", 'secret_opensearch.txt', ge
 idx = client.get_or_create_index(timestamp=time.time(), index_template=_index_template, index_mod="M")
 no_of_fail_saved = client.send(idx, docs, metadata=None, batch_size=10000, drop_nulls=False)
 
-print("========================================================================", "FINISHED : ", len(docs), "ROWS ARE SENT", no_of_fail_saved, "ROWS ARE FAILED", "========================================================================", sep='\n')
+print("=================================== RUCIO : Rules History ====================================="
+      , "FINISHED : "
+      , len(docs), "ROWS ARE SENT"
+      , no_of_fail_saved, "ROWS ARE FAILED"
+      , "=================================== RUCIO : Rules History =====================================", sep='\n')
