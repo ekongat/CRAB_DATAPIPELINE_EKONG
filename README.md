@@ -1,6 +1,6 @@
 # CRAB Data Pipeline
 
-The **crab_cronjob** is material for excuting schedule datapipeline. The goal is to update wanted data on dashboards(Opensearch and Grafana) daily. \
+The **crab_cronjob** is material for excuting schedule datapipeline. The goal is to update wanted data on dashboards(Opensearch and Grafana) daily.
 
 ## Material
 The folder contains code for pulling the data today from HDFS and upload to dashboards, where \
