@@ -1,5 +1,11 @@
 # CRAB Data Pipeline
 
+The environment to run the scripts contained here is available on crab-dev-tw04. See crab docs "cms-spark.md" for details.
+
+---
+
+(migrated to crab docs)
+
 The **crab_cronjob** is material for excuting schedule datapipeline. The goal is to update wanted data on dashboards(Opensearch and Grafana) daily.
 
 ## Material
